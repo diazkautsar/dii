@@ -11,7 +11,8 @@ export const getRoleBasedOnUserId = async (userId: number) => {
       from user_role ur
       left join users u on u.id = ur.user_id 
       left join roles r on r.id = ur.role_id
-      where ur.user_id = ${userId}  
+      where ur.user_id = ${userId}
+      and r.deleted_at is null  
     `)
 
     return result.rows as {
