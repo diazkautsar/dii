@@ -31,7 +31,7 @@ export const validateRoleSelectionToken = (token: string): RoleSelectionTokenInt
 
     return payload
   } catch (error) {
-    throw new HttpError(400, "Role selection token expired or invalid")
+    throw new HttpError(401, "role selection token expired or invalid")
   }
 }
 
@@ -45,4 +45,14 @@ export const generateAccessToken = (dto: AccessTokenInterface) => {
       expiresIn: "1H"
     }
   )
+}
+
+export const validateAccessToken = (token: string): AccessTokenInterface => {
+  try {
+    const payload = jwt.verify(token, env.ACCESS_TOKEN_SECRET) as AccessTokenInterface
+
+    return payload
+  } catch (error) {
+    throw new HttpError(401, "unauthorized")
+  }
 }
