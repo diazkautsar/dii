@@ -11,3 +11,16 @@ export const getUserBasedUsername = async (username: string) => {
     throw error
   }
 }
+
+export const getUserBasedOnUserId = async (userId: number) => {
+  try {
+    const result = await pool.query(`
+      select * from users u WHERE u.id = ${userId}
+    `)
+
+    return result.rows as { id: number, username: string, first_name: string, last_name: string }[]
+
+  } catch (error) {
+    throw error
+  }
+}
