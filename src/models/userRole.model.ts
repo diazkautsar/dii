@@ -29,3 +29,20 @@ export const getRoleBasedOnUserId = async (userId: number) => {
     throw error
   }
 }
+
+export const insertMultipleRoleForOneUser = async (userId: number, roleIds: number[]) => {
+  try {
+    const text = `
+      INSERT INTO user_role (user_id, role_id)
+      SELECT $1, UNNEST($2::int[])
+      RETURNING *
+    `
+    const value = [ userId, roleIds ]
+    const result = await pool.query(text, value)
+
+    return result.rows as { id: number }[]
+
+  } catch (error) {
+    throw error
+  }
+}

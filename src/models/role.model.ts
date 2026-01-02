@@ -40,3 +40,21 @@ export const insertRole = async (dto: AddRoleInterface) => {
     throw error
   }
 }
+
+export const getRoleBaseMultipleId = async (ids: number[]) => {
+  try {
+    const text = `
+      select
+      r.id as "id"
+      , r.name as "name"
+      from roles r where r.id = ANY($1::int[])
+      and deleted_at is null
+    `
+    const value = [ ids ]
+    const result = await pool.query(text, value)
+
+    return result.rows as { id: number, name: string }[]
+  } catch (error) {
+    throw error
+  }
+}
