@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express"
-import { addMenu } from "../services/index.js"
+import { addMenu, setMenuToRole } from "../services/index.js"
 import type { ResponseInterface } from "../interface.js"
 
 export const addMenuController = async (req: Request, res: Response, next: NextFunction) => {
@@ -24,6 +24,36 @@ export const addMenuController = async (req: Request, res: Response, next: NextF
       description: body?.description ?? null,
       parentId: body?.parentId ?? null,
     })
+    
+    const response: ResponseInterface = {
+      success: true,
+      message: "success",
+      data,
+    }
+
+    return res.status(201).json(response)
+  } catch (error) {
+    throw next(error)
+  }
+}
+
+export const setMenuToRoleController = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const body = req.body
+    if (!body) {
+      return next({ status: 400, message: "form invalid. required field" })
+    }
+
+    const { menuId, roleId } = body
+    if (!menuId) {
+      return next({ status: 400, message: "menuId required" })
+    }
+
+    if (!roleId) {
+      return next({ status: 400, message: "roleId required" })
+    } 
+
+    const data = await setMenuToRole(menuId, roleId)
     
     const response: ResponseInterface = {
       success: true,

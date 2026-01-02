@@ -37,3 +37,22 @@ export const addMenu = async (dto: AddMenuInterface) => {
     client.release()
   }
 }
+
+export const setMenuToRole = async (menuId: number, roleId: number) => {
+  try {
+    const [ role ] = await getRoleBaseId(roleId)
+    if (!role) {
+      throw new HttpError(400, "invalid role id")
+    }
+
+    const [ menu ] = await getMenuBasedOnId(menuId)
+    if (!menu) {
+      throw new HttpError(400, "invalid menu id")
+    }
+
+    await insertMenuRole(menuId, roleId)
+
+  } catch (error) {
+    throw error
+  }
+}
