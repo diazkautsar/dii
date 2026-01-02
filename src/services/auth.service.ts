@@ -64,6 +64,7 @@ export const selectRoleLogin = async (dto: SubmitRoleLoginInterface) => {
       userId: user.id,
       firstName: user.first_name,
       lastName: user.last_name,
+      roleId: selectedRoleId
     })
 
     return {

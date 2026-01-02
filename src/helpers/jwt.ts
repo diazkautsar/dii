@@ -11,6 +11,7 @@ interface AccessTokenInterface {
   userId: number;
   firstName: string;
   lastName: string;
+  roleId: number;
 }
 
 export const generateRoleSelectionToken = (dto: RoleSelectionTokenInterface) => {
