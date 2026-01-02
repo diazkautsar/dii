@@ -1,5 +1,10 @@
 import { pool } from "../config/db.js"
 
+export interface AddRoleInterface {
+  name: string;
+  description: string | null;
+}
+
 export const getRoleBaseId = async (id: number) => {
   try {
     const text = `
@@ -14,6 +19,23 @@ export const getRoleBaseId = async (id: number) => {
     const result = await pool.query(text, value)
 
     return result.rows as { id: number, name: string }[]
+  } catch (error) {
+    throw error
+  }
+}
+
+export const insertRole = async (dto: AddRoleInterface) => {
+  try {
+    const text = `
+      INSERT INTO roles(name, description)
+      VALUES($1, $2)
+      RETURNING *
+    `
+
+    const value = [ dto.name, dto.description ]
+    const result = await pool.query(text, value)
+
+    return result.rows as { id: number }[]
   } catch (error) {
     throw error
   }
