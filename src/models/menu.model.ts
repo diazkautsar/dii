@@ -26,15 +26,17 @@ export const getMenuBasedOnRoleId = async (roleId: number) => {
   try {
     const text = `
       select
-      id
-      , name
-      , description
-      , parent_id
-      , role_id
-      from menu
+      m.id as "id"
+      , m.name as "name"
+      , m.description as "description"
+      , m.parent_id as "parent_id"
+      , mr.role_id as "role_id"
+      from menu m
+      left join menu_role mr on mr.menu_id = m.id
       where
-      role_id = $1
-      and deleted_at is null
+      mr.role_id = $1
+      and m.deleted_at is null
+      and mr.deleted_at is null
     `
     const value = [ roleId ]
     const fromQuery = await pool.query(text, value)
@@ -80,15 +82,15 @@ export const getMenuBasedOnId = async (id: number) => {
   try {
     const text = `
     select
-      id
-      , name
-      , description
-      , parent_id
-      , role_id
-      from menu
+      m.id as "id"
+      , m.name as "name"
+      , m.description as "description"
+      , m.parent_id as "parent_id"
+      , mr.role_id as "role_id"
+      from menu m
+      left join menu_role mr on mr.menu_id = m.id
       where
-      id = $1
-      and deleted_at is null 
+      m.id = $1
     `
     const value = [ id ]
 
@@ -103,15 +105,15 @@ export const getMenuBasedOnId = async (id: number) => {
 export const insertMenu = async (dto: AddMenuInterface) => {
   try {
     const text = `
-    INSERT INTO menu(name, description, parent_id, role_id)
-    VALUES($1, $2, $3, $4)
+    INSERT INTO menu(name, description, parent_id)
+    VALUES($1, $2, $3)
     RETURNING *
     `
-    const value = [ dto.name, dto.description, dto.parentId, dto.roleId ]
+    const value = [ dto.name, dto.description, dto.parentId ]
 
     const result = await pool.query(text, value)
 
-    return result.rows
+    return result.rows as { id: number }[]
   } catch (error) {
     throw error
   }

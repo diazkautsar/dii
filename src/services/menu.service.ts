@@ -1,9 +1,14 @@
+import { pool } from "../config/index.js";
 import { HttpError } from "../helpers/index.js";
-import { getMenuBasedOnId, getRoleBaseId, insertMenu } from "../models/index.js";
+import { getMenuBasedOnId, getRoleBaseId, insertMenu, insertMenuRole } from "../models/index.js";
 import type { AddMenuInterface } from "../models/index.js"
 
 export const addMenu = async (dto: AddMenuInterface) => {
+  const client = await pool.connect();
+
   try {
+    await client.query("BEGIN");
+
     const {
       parentId,
       roleId,
@@ -19,8 +24,16 @@ export const addMenu = async (dto: AddMenuInterface) => {
       throw new HttpError(400, "invalid role id")
     }
 
-    await insertMenu(dto)
+    const [ { id: menuId } ] = await insertMenu(dto)
+
+    await insertMenuRole(menuId, roleId)
+
+    await client.query("COMMIT");
+
   } catch (error) {
+    await client.query("ROLLBACK");
     throw error
+  } finally {
+    client.release()
   }
 }
